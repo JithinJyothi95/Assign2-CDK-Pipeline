@@ -1,0 +1,744 @@
+Inside DailyMoodTrackerStack
+Bucket name: ${Token[TOKEN.18]}
+Lambda path exists: True
+Handler file exists: True
+Stack initialized successfully with the following resources:
+API Endpoint: https://${Token[TOKEN.77]}.execute-api.${Token[AWS.Region.4]}.${Token[AWS.URLSuffix.1]}/${Token[TOKEN.97]}/moods
+Lambda Function Name: ${Token[TOKEN.64]}
+DynamoDB Table Name: ${Token[TOKEN.40]}
+S3 Bucket Name: ${Token[TOKEN.18]}
+Resources:
+  JJMoodLogs887628124F1CBA4:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: jj-mood-logs-8876281
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+      VersioningConfiguration:
+        Status: Enabled
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/JJMoodLogs8876281/Resource
+  JJMoodLogs8876281PolicyA66F459A:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: JJMoodLogs887628124F1CBA4
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:PutBucketPolicy
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - JJMoodLogs887628124F1CBA4
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - JJMoodLogs887628124F1CBA4
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/JJMoodLogs8876281/Policy/Resource
+  JJMoodLogs8876281AutoDeleteObjectsCustomResource240174C2:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: JJMoodLogs887628124F1CBA4
+    DependsOn:
+      - JJMoodLogs8876281PolicyA66F459A
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/JJMoodLogs8876281/AutoDeleteObjectsCustomResource/Default
+  CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role
+  CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+          - Arn
+      Runtime:
+        Fn::FindInMap:
+          - LatestNodeRuntimeMap
+          - Ref: AWS::Region
+          - value
+      Description:
+        Fn::Join:
+          - ""
+          - - "Lambda function for auto-deleting objects in "
+            - Ref: JJMoodLogs887628124F1CBA4
+            - " S3 bucket."
+    DependsOn:
+      - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler
+      aws:asset:path: asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6
+      aws:asset:property: Code
+  DailyMoodTable887628198AA43BA:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: daily_mood_8876281
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/DailyMoodTable8876281/Resource
+  LogMoodFunction8876281ServiceRole0EF5752C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/LogMoodFunction8876281/ServiceRole/Resource
+  LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+              - dynamodb:DescribeTable
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - DailyMoodTable887628198AA43BA
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9
+      Roles:
+        - Ref: LogMoodFunction8876281ServiceRole0EF5752C
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/LogMoodFunction8876281/ServiceRole/DefaultPolicy/Resource
+  LogMoodFunction887628173935EB3:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: b85c3993c228c0402b0bc92950472d41a3c8f361a908ffb820929f18fc8a0752.zip
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: DailyMoodTable887628198AA43BA
+      Handler: moodHandler.handler
+      Role:
+        Fn::GetAtt:
+          - LogMoodFunction8876281ServiceRole0EF5752C
+          - Arn
+      Runtime: nodejs20.x
+      Timeout: 30
+    DependsOn:
+      - LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9
+      - LogMoodFunction8876281ServiceRole0EF5752C
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/LogMoodFunction8876281/Resource
+      aws:asset:path: asset.b85c3993c228c0402b0bc92950472d41a3c8f361a908ffb820929f18fc8a0752
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  MoodLoggerAPI45D1D828:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Mood Logging API
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Resource
+  MoodLoggerAPICloudWatchRoleB46F2297:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/CloudWatchRole/Resource
+  MoodLoggerAPIAccount5D697404:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn:
+        Fn::GetAtt:
+          - MoodLoggerAPICloudWatchRoleB46F2297
+          - Arn
+    DependsOn:
+      - MoodLoggerAPI45D1D828
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Account
+  MoodLoggerAPIDeployment3E4F7E99430ba1617e041a302bf221972a09a281:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Automatically created by the RestApi construct
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+    DependsOn:
+      - MoodLoggerAPImoodsDELETE9CB9AEEB
+      - MoodLoggerAPImoodsGET52CA0A6C
+      - MoodLoggerAPImoodsPOSTC34AC8D5
+      - MoodLoggerAPImoodsBE9A7779
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Deployment/Resource
+      aws:cdk:do-not-refactor: true
+  MoodLoggerAPIDeploymentStageprodFA7DB289:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId:
+        Ref: MoodLoggerAPIDeployment3E4F7E99430ba1617e041a302bf221972a09a281
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+      StageName: prod
+    DependsOn:
+      - MoodLoggerAPIAccount5D697404
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/DeploymentStage.prod/Resource
+  MoodLoggerAPImoodsBE9A7779:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - MoodLoggerAPI45D1D828
+          - RootResourceId
+      PathPart: moods
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/Resource
+  MoodLoggerAPImoodsPOSTApiPermissionDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EPOSTmoods4C929C00:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /
+            - Ref: MoodLoggerAPIDeploymentStageprodFA7DB289
+            - /POST/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/POST/ApiPermission.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.POST..moods
+  MoodLoggerAPImoodsPOSTApiPermissionTestDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EPOSTmoods2B8D85BD:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /test-invoke-stage/POST/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/POST/ApiPermission.Test.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.POST..moods
+  MoodLoggerAPImoodsPOSTC34AC8D5:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - LogMoodFunction887628173935EB3
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: MoodLoggerAPImoodsBE9A7779
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/POST/Resource
+  MoodLoggerAPImoodsGETApiPermissionDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EGETmoods8D90A63A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /
+            - Ref: MoodLoggerAPIDeploymentStageprodFA7DB289
+            - /GET/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/GET/ApiPermission.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.GET..moods
+  MoodLoggerAPImoodsGETApiPermissionTestDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EGETmoods64723303:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /test-invoke-stage/GET/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/GET/ApiPermission.Test.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.GET..moods
+  MoodLoggerAPImoodsGET52CA0A6C:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - LogMoodFunction887628173935EB3
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: MoodLoggerAPImoodsBE9A7779
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/GET/Resource
+  MoodLoggerAPImoodsDELETEApiPermissionDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EDELETEmoods95AE9E93:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /
+            - Ref: MoodLoggerAPIDeploymentStageprodFA7DB289
+            - /DELETE/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/DELETE/ApiPermission.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.DELETE..moods
+  MoodLoggerAPImoodsDELETEApiPermissionTestDailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33EDELETEmoodsED19692A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - LogMoodFunction887628173935EB3
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: MoodLoggerAPI45D1D828
+            - /test-invoke-stage/DELETE/moods
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/DELETE/ApiPermission.Test.DailyMoodTrackerStackJJ8876281MoodLoggerAPI623AB33E.DELETE..moods
+  MoodLoggerAPImoodsDELETE9CB9AEEB:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - LogMoodFunction887628173935EB3
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: MoodLoggerAPImoodsBE9A7779
+      RestApiId:
+        Ref: MoodLoggerAPI45D1D828
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/MoodLoggerAPI/Default/moods/DELETE/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/22PQU/DMAyFf8vuWdhWCXHdhjiBqDruk5uaLaxJqtphqqL8d5RkohPi9D47z37xRm5Wj3K1gCstVXdZ9rqV4cCgLgKudAxUybDz6oIs9p/2RkVq12s1ze1bXYodEEbRTRaM61oZPqDtMXkzRNGDaTuQ4cVbxdrZ9HTPNY5GE2lno9BgZGhcmc86RxeKgqojECGT3CYRMOgTMF5hkuE1ZzVIvB103jHjVinnLYtnHHo3GbT5zrvqwHDKwQUaJOdHhem+3+K2s/Ab8tl1qVUoRrH3xM786042GAZtT39c9ei+dYdjDso3pQ8k3/3su+fBcxT1xGdnHyq5XsunxRdpvRy9ZW1QNkV/ABCwYrfpAQAA
+    Metadata:
+      aws:cdk:path: DailyMoodTrackerStackJJ8876281/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Mappings:
+  LatestNodeRuntimeMap:
+    af-south-1:
+      value: nodejs22.x
+    ap-east-1:
+      value: nodejs22.x
+    ap-east-2:
+      value: nodejs22.x
+    ap-northeast-1:
+      value: nodejs22.x
+    ap-northeast-2:
+      value: nodejs22.x
+    ap-northeast-3:
+      value: nodejs22.x
+    ap-south-1:
+      value: nodejs22.x
+    ap-south-2:
+      value: nodejs22.x
+    ap-southeast-1:
+      value: nodejs22.x
+    ap-southeast-2:
+      value: nodejs22.x
+    ap-southeast-3:
+      value: nodejs22.x
+    ap-southeast-4:
+      value: nodejs22.x
+    ap-southeast-5:
+      value: nodejs22.x
+    ap-southeast-7:
+      value: nodejs22.x
+    ca-central-1:
+      value: nodejs22.x
+    ca-west-1:
+      value: nodejs22.x
+    cn-north-1:
+      value: nodejs22.x
+    cn-northwest-1:
+      value: nodejs22.x
+    eu-central-1:
+      value: nodejs22.x
+    eu-central-2:
+      value: nodejs22.x
+    eu-isoe-west-1:
+      value: nodejs18.x
+    eu-north-1:
+      value: nodejs22.x
+    eu-south-1:
+      value: nodejs22.x
+    eu-south-2:
+      value: nodejs22.x
+    eu-west-1:
+      value: nodejs22.x
+    eu-west-2:
+      value: nodejs22.x
+    eu-west-3:
+      value: nodejs22.x
+    eusc-de-east-1:
+      value: nodejs22.x
+    il-central-1:
+      value: nodejs22.x
+    me-central-1:
+      value: nodejs22.x
+    me-south-1:
+      value: nodejs22.x
+    mx-central-1:
+      value: nodejs22.x
+    sa-east-1:
+      value: nodejs22.x
+    us-east-1:
+      value: nodejs22.x
+    us-east-2:
+      value: nodejs22.x
+    us-gov-east-1:
+      value: nodejs22.x
+    us-gov-west-1:
+      value: nodejs22.x
+    us-iso-east-1:
+      value: nodejs18.x
+    us-iso-west-1:
+      value: nodejs18.x
+    us-isob-east-1:
+      value: nodejs18.x
+    us-isob-west-1:
+      value: nodejs18.x
+    us-west-1:
+      value: nodejs22.x
+    us-west-2:
+      value: nodejs22.x
+Outputs:
+  MoodLoggerAPIEndpoint85B0FB79:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: MoodLoggerAPI45D1D828
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: MoodLoggerAPIDeploymentStageprodFA7DB289
+          - /
+  MoodLoggerAPIEndpoint:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: MoodLoggerAPI45D1D828
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: MoodLoggerAPIDeploymentStageprodFA7DB289
+          - /moods
+  LambdaFunctionName:
+    Value:
+      Ref: LogMoodFunction887628173935EB3
+  DynamoDBTableName:
+    Value:
+      Ref: DailyMoodTable887628198AA43BA
+  S3BucketName:
+    Value:
+      Ref: JJMoodLogs887628124F1CBA4
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-3
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-4
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - il-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+      - Fn::Equals:
+          - Ref: AWS::Region
+          - us-west-2
+Parameters:
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+

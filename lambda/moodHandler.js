@@ -116,7 +116,7 @@ exports.handler = async (event) => {
         body: JSON.stringify({ message: "Mood entry deleted" })
       };
     }
-
+// Method not allowed
     return {
       statusCode: 405,
       headers,
