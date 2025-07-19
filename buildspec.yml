@@ -13,4 +13,4 @@ phases:
 artifacts:
   base-directory: cdk.out
   files:
-    - '**/*'
+    - '**/*'   # include cdk.out including the .zip
