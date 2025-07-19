@@ -7,17 +7,9 @@ __pycache__/
 dist/
 build/
 
-# CDK
-cdk.out/
-!cdk.out/*.template.json
-!cdk.out/*.assets.json
-!cdk.out/*.js
-!cdk.out/*.json
-
 # Node.js
 node_modules/
 npm-debug.log*
-yarn.lock
 
 # Lambda specific
 lambda/node_modules/
