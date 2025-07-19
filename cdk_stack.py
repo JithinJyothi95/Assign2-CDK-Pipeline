@@ -1,4 +1,5 @@
 import os
+
 from aws_cdk import (
     Stack,
     RemovalPolicy,
@@ -7,8 +8,10 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
     aws_apigateway as apigateway,
-    BundlingOptions,
-    Duration
+    Duration,
+    aws_lambda as lambda_code,
+    aws_lambda as lambda_assets,
+    aws_lambda as lambda_mod,
 )
 from constructs import Construct
 
@@ -37,15 +40,13 @@ class DailyMoodTrackerStack(Stack):
         print("Bucket name:", bucket.bucket_name)
         print("Lambda path exists:", os.path.exists("lambda"))
         print("Handler file exists:", os.path.exists("lambda/moodHandler.js"))
-
         # Lambda Function 
+        from aws_cdk.aws_lambda import Code, AssetHashType
         lambda_fn = _lambda.Function(self, "LogMoodFunction8876281",
             runtime=_lambda.Runtime.NODEJS_20_X,
             handler="moodHandler.handler",
-            code=_lambda.Code.from_asset("lambda"),  
-            environment={
-                "TABLE_NAME": table.table_name
-            },
+            code=Code.from_asset("lambda", asset_hash_type=AssetHashType.CUSTOM),
+            environment={"TABLE_NAME": table.table_name},
             timeout=Duration.seconds(30)
         )
 
