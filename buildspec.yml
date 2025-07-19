@@ -8,16 +8,17 @@ phases:
     commands:
       - npm install -g aws-cdk
       - pip install -r requirements.txt
-  pre_build:
-    commands:
-      - echo "Verifying lambda directory structure"
-      - ls -la lambda/
-      - echo "CDK version:"
-      - cdk --version
+
   build:
     commands:
-      - cdk synth -o cdk.out --verbose
+      - echo "Synthesizing CDK..."
+      - cdk synth -o cdk.out --asset-metadata
+
 artifacts:
   files:
-    - '**/*'
+    - DailyMoodTrackerStack.template.json
   base-directory: cdk.out
+
+cache:
+  paths:
+    - node_modules/**/* 
