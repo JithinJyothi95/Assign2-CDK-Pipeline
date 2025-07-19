@@ -66,15 +66,7 @@ exports.handler = async (event) => {
     }
 
     if (method === "GET") {
-      const user_id = event.queryStringParameters?.user_id;
-
-      if (!user_id) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ message: "Missing user_id query parameter" })
-        };
-      }
+      const user_id = event.queryStringParameters?.user_id || "demo_user";
 
       const params = {
         TableName: tableName,
