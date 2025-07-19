@@ -1,0 +1,36 @@
+# Python
+*.pyc
+__pycache__/
+.env
+.venv/
+*.egg-info/
+dist/
+build/
+
+# CDK outputs
+cdk.out/
+cdk.context.json
+
+# IDE settings
+.vscode/
+.idea/
+*.code-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Unit test cache
+.cache/
+pytest_cache/
+
+# AWS credentials (never commit!)
+.aws/
+
+# Node modules (if any)
+node_modules/
+
+
