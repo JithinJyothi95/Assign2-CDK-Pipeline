@@ -4,7 +4,7 @@
 
 The **Daily Mood Tracker** is a cloud-native serverless application designed to collect and store users' mood logs using AWS services. It is built using the AWS CDK (Cloud Development Kit) and supports automated deployments via CodePipeline.
 
-The goal of this project is to demonstrate infrastructure-as-code (IaC) principles, CI/CD automation, and the integration of Lambda, API Gateway, DynamoDB, and S3—all while ensuring reproducible cloud environments.
+The goal of this project is to demonstrate infrastructure-as-code (IaC) principles, CI/CD automation, and the integration of Lambda, API Gateway, DynamoDB, and S3, all while ensuring reproducible cloud environments.
 
 ---
 
