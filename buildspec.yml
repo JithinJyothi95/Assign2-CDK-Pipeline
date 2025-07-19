@@ -12,10 +12,9 @@ phases:
     commands:
       - echo "Synthesizing CDK app..."
       - cdk synth -o cdk.out
+      - ls -la cdk.out  
 
 artifacts:
   base-directory: cdk.out
   files:
-    - DailyMoodTrackerStack.template.json
-    - '**/*.json'
-    - '**/*.js'
+    - DailyMoodTrackerStack.template.json  
