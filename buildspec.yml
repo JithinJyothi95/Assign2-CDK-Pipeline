@@ -8,9 +8,15 @@ phases:
     commands:
       - npm install -g aws-cdk
       - pip install -r requirements.txt
+  pre_build:
+    commands:
+      - echo "Verifying lambda directory structure"
+      - ls -la lambda/
+      - echo "CDK version:"
+      - cdk --version
   build:
     commands:
-      - cdk synth -o cdk.out
+      - cdk synth -o cdk.out --verbose
 artifacts:
   files:
     - '**/*'

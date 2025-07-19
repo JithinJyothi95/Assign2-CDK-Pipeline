@@ -7,7 +7,6 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
     aws_apigateway as apigateway,
-    aws_s3_assets as s3_assets
 )
 from constructs import Construct
 
@@ -37,18 +36,11 @@ class DailyMoodTrackerStack(Stack):
         print("Lambda path exists:", os.path.exists("lambda"))
         print("Handler file exists:", os.path.exists("lambda/moodHandler.js"))
 
-        # Lambda Asset for CodePipeline compatibility
-        lambda_asset = s3_assets.Asset(self, "MoodLambdaAsset",
-            path=os.path.join(os.getcwd(), "lambda")
-        )
-
+        # Lambda Function - Use Code.from_asset instead of S3 asset approach
         lambda_fn = _lambda.Function(self, "LogMoodFunction8876281",
             runtime=_lambda.Runtime.NODEJS_20_X,
             handler="moodHandler.handler",
-            code=_lambda.Code.from_bucket(
-                bucket=lambda_asset.bucket,
-                key=lambda_asset.s3_object_key
-            ),
+            code=_lambda.Code.from_asset("lambda"),  # Simplified approach
             environment={
                 "TABLE_NAME": table.table_name
             }
@@ -56,7 +48,6 @@ class DailyMoodTrackerStack(Stack):
 
         # Permissions
         table.grant_read_write_data(lambda_fn)
-        lambda_asset.grant_read(lambda_fn)
 
         # API Gateway
         api = apigateway.LambdaRestApi(
