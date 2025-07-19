@@ -6,18 +6,17 @@ phases:
       python: 3.11
       nodejs: 20
     commands:
-      - echo "Installing backend dependencies..."
       - pip install -r requirements.txt
-      - echo "Installing Lambda dependencies..."
-      - cd lambda && npm install && cd ..
-      - echo "Installing AWS CDK globally..."
       - npm install -g aws-cdk
+      - npm install
   build:
     commands:
-      - echo "Synthesizing CDK stack..."
+      - echo "Synthesizing CDK app..."
       - cdk synth -o cdk.out
 
 artifacts:
   base-directory: cdk.out
   files:
-    - '**/*'
+    - DailyMoodTrackerStack.template.json
+    - '**/*.json'
+    - '**/*.js'
