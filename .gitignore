@@ -10,6 +10,7 @@ build/
 # CDK outputs
 cdk.out/
 cdk.context.json
+lambda/cdk.out/
 
 # IDE settings
 .vscode/
