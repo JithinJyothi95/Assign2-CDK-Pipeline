@@ -39,3 +39,4 @@ pytest_cache/
 
 # AWS
 .aws/
+cdk.out/
