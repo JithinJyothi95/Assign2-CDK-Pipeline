@@ -1,22 +1,30 @@
 # Python
 *.pyc
 __pycache__/
-.env
 .venv/
+.env
 *.egg-info/
 dist/
 build/
 
-# CDK outputs
-/cdk.out/*
-!/cdk.out/*.zip
-!/cdk.out/**/*.zip
-!/cdk.out/*.json
-!/cdk.out/**/*.json
-!/cdk.out/*.js
-!/cdk.out/**/*.js
+# CDK
+cdk.out/
+!cdk.out/*.template.json
+!cdk.out/*.assets.json
+!cdk.out/*.js
+!cdk.out/*.json
 
-# IDE settings
+# Node.js
+node_modules/
+npm-debug.log*
+yarn.lock
+
+# Lambda specific
+lambda/node_modules/
+lambda/package-lock.json
+lambda/yarn.lock
+
+# Editor folders
 .vscode/
 .idea/
 *.code-workspace
@@ -25,15 +33,9 @@ build/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# Unit test cache
+# Test and cache
 .cache/
 pytest_cache/
 
-# AWS credentials (never commit!)
+# AWS
 .aws/
-
-# Node modules
-node_modules/

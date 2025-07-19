@@ -6,10 +6,15 @@ phases:
       python: 3.11
       nodejs: 20
     commands:
+      - echo "Installing backend dependencies..."
       - pip install -r requirements.txt
+      - echo "Installing Lambda dependencies..."
+      - cd lambda && npm install && cd ..
+      - echo "Installing AWS CDK globally..."
       - npm install -g aws-cdk
   build:
     commands:
+      - echo "Synthesizing CDK stack..."
       - cdk synth -o cdk.out
 
 artifacts:
