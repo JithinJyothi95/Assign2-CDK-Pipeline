@@ -40,7 +40,7 @@ class DailyMoodTrackerStack(Stack):
         lambda_fn = _lambda.Function(self, "LogMoodFunction8876281",
             runtime=_lambda.Runtime.NODEJS_20_X,
             handler="moodHandler.handler",
-            code=_lambda.Code.from_asset("lambda"),  # Simplified approach
+            code=_lambda.Code.from_asset("lambda"), 
             environment={
                 "TABLE_NAME": table.table_name
             }

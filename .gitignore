@@ -8,9 +8,13 @@ dist/
 build/
 
 # CDK outputs
-cdk.out/
-cdk.context.json
-lambda/cdk.out/
+/cdk.out/*
+!/cdk.out/*.zip
+!/cdk.out/**/*.zip
+!/cdk.out/*.json
+!/cdk.out/**/*.json
+!/cdk.out/*.js
+!/cdk.out/**/*.js
 
 # IDE settings
 .vscode/
@@ -31,7 +35,5 @@ pytest_cache/
 # AWS credentials (never commit!)
 .aws/
 
-# Node modules (if any)
+# Node modules
 node_modules/
-
-

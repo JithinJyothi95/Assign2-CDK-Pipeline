@@ -1,0 +1,859 @@
+{
+ "Resources": {
+  "JJMoodLogs887628124F1CBA4": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "jj-mood-logs-8876281",
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/JJMoodLogs8876281/Resource"
+   }
+  },
+  "JJMoodLogs8876281PolicyA66F459A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "JJMoodLogs887628124F1CBA4"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "JJMoodLogs887628124F1CBA4",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "JJMoodLogs887628124F1CBA4",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/JJMoodLogs8876281/Policy/Resource"
+   }
+  },
+  "JJMoodLogs8876281AutoDeleteObjectsCustomResource240174C2": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "JJMoodLogs887628124F1CBA4"
+    }
+   },
+   "DependsOn": [
+    "JJMoodLogs8876281PolicyA66F459A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/JJMoodLogs8876281/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-851486812194-us-east-1",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "JJMoodLogs887628124F1CBA4"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "DailyMoodTable887628198AA43BA": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "user_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "user_id",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "TableName": "daily_mood_8876281"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/DailyMoodTable8876281/Resource"
+   }
+  },
+  "LogMoodFunction8876281ServiceRole0EF5752C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/LogMoodFunction8876281/ServiceRole/Resource"
+   }
+  },
+  "LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DailyMoodTable887628198AA43BA",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9",
+    "Roles": [
+     {
+      "Ref": "LogMoodFunction8876281ServiceRole0EF5752C"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/LogMoodFunction8876281/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogMoodFunction887628173935EB3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-851486812194-us-east-1",
+     "S3Key": "78971b431a33b6434d85c60c9ff7808ddd2152b18837173afc69d6e323fbf12f.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "TABLE_NAME": {
+       "Ref": "DailyMoodTable887628198AA43BA"
+      }
+     }
+    },
+    "Handler": "moodHandler.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "LogMoodFunction8876281ServiceRole0EF5752C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "LogMoodFunction8876281ServiceRoleDefaultPolicy9A21F8B9",
+    "LogMoodFunction8876281ServiceRole0EF5752C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/LogMoodFunction8876281/Resource",
+    "aws:asset:path": "asset.78971b431a33b6434d85c60c9ff7808ddd2152b18837173afc69d6e323fbf12f",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MoodLoggerAPI45D1D828": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "Mood Logging API"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Resource"
+   }
+  },
+  "MoodLoggerAPICloudWatchRoleB46F2297": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/CloudWatchRole/Resource"
+   }
+  },
+  "MoodLoggerAPIAccount5D697404": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "MoodLoggerAPICloudWatchRoleB46F2297",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "MoodLoggerAPI45D1D828"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Account"
+   }
+  },
+  "MoodLoggerAPIDeployment3E4F7E993f5dff45f725159c59fbe2ca3b233d0b": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    }
+   },
+   "DependsOn": [
+    "MoodLoggerAPImoodsDELETE9CB9AEEB",
+    "MoodLoggerAPImoodsGET52CA0A6C",
+    "MoodLoggerAPImoodsPOSTC34AC8D5",
+    "MoodLoggerAPImoodsBE9A7779"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "MoodLoggerAPIDeploymentStageprodFA7DB289": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "MoodLoggerAPIDeployment3E4F7E993f5dff45f725159c59fbe2ca3b233d0b"
+    },
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "MoodLoggerAPIAccount5D697404"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/DeploymentStage.prod/Resource"
+   }
+  },
+  "MoodLoggerAPImoodsBE9A7779": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "MoodLoggerAPI45D1D828",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "moods",
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/Resource"
+   }
+  },
+  "MoodLoggerAPImoodsPOSTApiPermissionDailyMoodTrackerStackMoodLoggerAPIDD32301APOSTmoods6E70CBBE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/",
+       {
+        "Ref": "MoodLoggerAPIDeploymentStageprodFA7DB289"
+       },
+       "/POST/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/POST/ApiPermission.DailyMoodTrackerStackMoodLoggerAPIDD32301A.POST..moods"
+   }
+  },
+  "MoodLoggerAPImoodsPOSTApiPermissionTestDailyMoodTrackerStackMoodLoggerAPIDD32301APOSTmoods751B43BC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/test-invoke-stage/POST/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/POST/ApiPermission.Test.DailyMoodTrackerStackMoodLoggerAPIDD32301A.POST..moods"
+   }
+  },
+  "MoodLoggerAPImoodsPOSTC34AC8D5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LogMoodFunction887628173935EB3",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "MoodLoggerAPImoodsBE9A7779"
+    },
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/POST/Resource"
+   }
+  },
+  "MoodLoggerAPImoodsGETApiPermissionDailyMoodTrackerStackMoodLoggerAPIDD32301AGETmoodsD0079CE6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/",
+       {
+        "Ref": "MoodLoggerAPIDeploymentStageprodFA7DB289"
+       },
+       "/GET/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/GET/ApiPermission.DailyMoodTrackerStackMoodLoggerAPIDD32301A.GET..moods"
+   }
+  },
+  "MoodLoggerAPImoodsGETApiPermissionTestDailyMoodTrackerStackMoodLoggerAPIDD32301AGETmoods17B0D456": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/test-invoke-stage/GET/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/GET/ApiPermission.Test.DailyMoodTrackerStackMoodLoggerAPIDD32301A.GET..moods"
+   }
+  },
+  "MoodLoggerAPImoodsGET52CA0A6C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LogMoodFunction887628173935EB3",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "MoodLoggerAPImoodsBE9A7779"
+    },
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/GET/Resource"
+   }
+  },
+  "MoodLoggerAPImoodsDELETEApiPermissionDailyMoodTrackerStackMoodLoggerAPIDD32301ADELETEmoodsAD5A2F46": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/",
+       {
+        "Ref": "MoodLoggerAPIDeploymentStageprodFA7DB289"
+       },
+       "/DELETE/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/DELETE/ApiPermission.DailyMoodTrackerStackMoodLoggerAPIDD32301A.DELETE..moods"
+   }
+  },
+  "MoodLoggerAPImoodsDELETEApiPermissionTestDailyMoodTrackerStackMoodLoggerAPIDD32301ADELETEmoodsE86A7C19": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LogMoodFunction887628173935EB3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:851486812194:",
+       {
+        "Ref": "MoodLoggerAPI45D1D828"
+       },
+       "/test-invoke-stage/DELETE/moods"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/DELETE/ApiPermission.Test.DailyMoodTrackerStackMoodLoggerAPIDD32301A.DELETE..moods"
+   }
+  },
+  "MoodLoggerAPImoodsDELETE9CB9AEEB": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LogMoodFunction887628173935EB3",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "MoodLoggerAPImoodsBE9A7779"
+    },
+    "RestApiId": {
+     "Ref": "MoodLoggerAPI45D1D828"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/MoodLoggerAPI/Default/moods/DELETE/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22PzW7CMBCEn4W7cSlIVa9A1VOrRqF3tHG2sCW2o+y6KLL87lVsVEDqab7Zv9Eu9XLxpBczOPPctKd5R42OOwFzUnDmfeSVjptgTihq++UuVKTyHZnxWr74YjbAmFQ7OrC+bXT8hKbDaTZDUh3YpgUdX4MzQt5NrVuucLDETN4lRWB1rH3Zz3qNLpQUr/bAjMJ6PYmCng4geIZRx7ecVSPLuqd844prY3xwol6w7/xo0eU/b9xO4JCDC9TIPgwGp//+zOVm4XeUo2+nUqGU1DawePvv9H2rGvwPtTjk6/mRKZXc4S7qI0gfJKlqlKN3Dyv9+KifZ99MNB+CE7Ko66K/lZpgCd4BAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "DailyMoodTrackerStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "MoodLoggerAPIEndpoint85B0FB79": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MoodLoggerAPI45D1D828"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MoodLoggerAPIDeploymentStageprodFA7DB289"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "MoodLoggerAPIEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MoodLoggerAPI45D1D828"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MoodLoggerAPIDeploymentStageprodFA7DB289"
+      },
+      "/moods"
+     ]
+    ]
+   }
+  },
+  "LambdaFunctionName": {
+   "Value": {
+    "Ref": "LogMoodFunction887628173935EB3"
+   }
+  },
+  "DynamoDBTableName": {
+   "Value": {
+    "Ref": "DailyMoodTable887628198AA43BA"
+   }
+  },
+  "S3BucketName": {
+   "Value": {
+    "Ref": "JJMoodLogs887628124F1CBA4"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
