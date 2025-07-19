@@ -1,16 +1,18 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       python: 3.11
       nodejs: 20
     commands:
-      - npm install -g aws-cdk
       - pip install -r requirements.txt
+      - npm install -g aws-cdk
   build:
     commands:
       - cdk synth -o cdk.out
+
 artifacts:
   base-directory: cdk.out
   files:
-    - '**/*'   # include cdk.out including the .zip
+    - '**/*'
