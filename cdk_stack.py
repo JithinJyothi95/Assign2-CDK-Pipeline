@@ -7,6 +7,8 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
     aws_apigateway as apigateway,
+    BundlingOptions,
+    Duration
 )
 from constructs import Construct
 
@@ -36,14 +38,15 @@ class DailyMoodTrackerStack(Stack):
         print("Lambda path exists:", os.path.exists("lambda"))
         print("Handler file exists:", os.path.exists("lambda/moodHandler.js"))
 
-        # Lambda Function - Use Code.from_asset instead of S3 asset approach
+        # Lambda Function 
         lambda_fn = _lambda.Function(self, "LogMoodFunction8876281",
             runtime=_lambda.Runtime.NODEJS_20_X,
             handler="moodHandler.handler",
-            code=_lambda.Code.from_asset("lambda"),
+            code=_lambda.Code.from_asset("lambda"),  
             environment={
                 "TABLE_NAME": table.table_name
-            }
+            },
+            timeout=Duration.seconds(30)
         )
 
         # Permissions
