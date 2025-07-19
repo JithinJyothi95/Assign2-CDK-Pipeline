@@ -133,4 +133,3 @@ The Lambda deployment artifact (ZIP file) expected by CloudFormation is not avai
 
 Student: **Jithin Jyothi**  
 Student ID: **8876281**  
-Course: **INFO8985 – Cloud Architectures and Infrastructure as Code**
